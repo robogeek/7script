@@ -1,0 +1,177 @@
+# -*- tcl -*-
+
+test dbw-1.1 {No databases at start} {
+    dbw::children
+} ""
+test dbw-1.2 {new db adds one item} {
+    set token [dbw::new]
+    set children [dbw::children]
+    if {[llength $children] != 1} { error "Too many child databases" }
+    if {$children != $token}      { error "Unexpected list of children: $children" }
+    dbw::deletedb $token
+    if {[dbw::children] != ""}    { error "dbw::deletedb does not delete db" }
+    set ret ""
+} ""
+test dbw-1.3 {Initial db characteristics} {
+    set token [dbw::new]
+    if {[dbw::dbname $token] != ""} { error "Database name should be NULL" }
+    if {[dbw::dbmode $token] != ""} { error "Database mode should be NULL" }
+    if [dbw::isopen $token]         { error "Database should not be open" }
+    if [dbw::isValidMode $token]    { error "Mode should be invalid" }
+    if ![dbw::dbexists $token]      { error "Database should exist" }
+    dbw::deletedb $token
+    set ret ""
+} ""
+test dbw-1.4 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::fetch $token 1} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database '' must be open for reading"
+test dbw-1.5 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::insert $token 1 2} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for writing"
+test dbw-1.6 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::replace $token 1 2} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for writing"
+test dbw-1.7 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::store $token 1 2} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for writing"
+test dbw-1.8 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::delete $token 1} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for writing"
+test dbw-1.9 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::list $token} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for reading"
+test dbw-1.10 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::reorganize $token} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for writing"
+test dbw-1.11 {Database operations before open} {
+    set token [dbw::new]
+    catch {dbw::exists $token 1} msg
+    dbw::deletedb $token
+    set ret $msg
+} "Database in  not open, must be open for reading"
+test dbw-1.12 {Nonexistant database} {
+    catch {dbw::deletedb "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.13 {Nonexistant database} {
+    catch {dbw::iswritable "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.14 {Nonexistant database} {
+    catch {dbw::isreadable "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.15 {Nonexistant database} {
+    catch {dbw::isValidMode "goober"} msg
+    set ret $msg
+} 0
+test dbw-1.16 {Nonexistant database} {
+    catch {dbw::isopen "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.17 {Nonexistant database} {
+    catch {dbw::dump "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.18 {Nonexistant database} {
+    catch {dbw::open "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.19 {Nonexistant database} {
+    catch {dbw::close "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.20 {Nonexistant database} {
+    catch {dbw::dbname "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.21 {Nonexistant database} {
+    catch {dbw::dbmode "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.22 {Nonexistant database} {
+    catch {dbw::forget "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.23 {Nonexistant database} {
+    catch {dbw::dup "goober" "gaga"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.24 {Nonexistant database} {
+    catch {dbw::merge "goober" "gaga"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.25 {Nonexistant database} {
+    catch {dbw::export "goober" "gaga" "googoo"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.26 {Nonexistant database} {
+    catch {dbw::fetch "goober" "gaga"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.27 {Nonexistant database} {
+    catch {dbw::insert "goober" "gaga" "googoo"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.28 {Nonexistant database} {
+    catch {dbw::replace "goober" "gaga" "googoo"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.29 {Nonexistant database} {
+    catch {dbw::store "goober" "gaga" "googoo"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.30 {Nonexistant database} {
+    catch {dbw::delete "goober" "gaga"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.31 {Nonexistant database} {
+    catch {dbw::list "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.32 {Nonexistant database} {
+    catch {dbw::reorganize "goober"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.33 {Nonexistant database} {
+    catch {dbw::exists "goober" "key"} msg
+    set ret $msg
+} "Database with handle goober does not exist."
+test dbw-1.34 {Nonexistant database} {
+    dbw::dbexists "goober"
+} 0
+test dbw-1.35 {Nonexistant database} {
+    set token [dbw::new]
+    set ret   [dbw::dbexists $token]
+    dbw::deletedb $token
+    set ret
+} 1
+test dbw-1.36 {New db w/file name w/o open} {
+    set token [dbw::new "goober.db"]
+    if {[dbw::dbname $token] != "goober.db"} { error "Database filename not right" }
+    if {[dbw::dbmode $token] != ""}          { error "Database should not be open" }
+    if [dbw::isopen $token]                  { error "Database should not be open" }
+    dbw::deletedb $token
+    set ret ""
+} ""

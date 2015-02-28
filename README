@@ -1,0 +1,411 @@
+	 7Script - Dynamic database driven web sites made easy
+		 ===================================
+
+NOTE NOTE NOTE NOTE:  This software was developed in the mid 1990's
+back when PHP was barely past version 1.0.  Instead of using PHP, I 
+developed this system based on TCL (my preferred language at the time).
+It was used for a website, for a few years, until I replaced it with 
+some custom PHP code.  
+
+It's being published for historical reference ONLY.
+
+David Herron, Feb 27, 2015
+
+------------------------------------------------------------------
+
+7Script is a tool for making CGI based web sites.  It consists of a
+TCL interpreter with an extension allowing it to process HTML that
+has embedded TCL commands.  This allows for interspersed programming
+code and extremely dynamic and flexible generation of HTML.  In addition
+the interpreter has database and dynamic GIF creation support code
+built in.
+
+The original distribution for this was set up in a directory structure combining
+several open source projects into one built widget.  Currently a subset of that distribution
+is available through a Mercurial repository at
+	
+Also refer to the project description at:
+	http://davidherron.com/blog/topics/958-7script-dynamic-database-driven-web-sites-made-easy
+
+The 7script project is no longer used for anything.  I merely wanted to
+publish this for historical reference.
+
+The original directory contains the following subdirectories
+
+   Gdtclft1.9.4/    GD+FreeType support in TCL allowing for
+		    dynamic GIF creation with drawing text.
+
+   Tclgdbm0.4/	    Support for libgdbm style databases.
+
+   Tclmd5-0.3/      MD5 "message digest" support allowing for a
+		    convenient to use hashing algorithm.
+
+   Tclpasswd-0.2/   Password encryption and checking support.
+
+   gdbm-1.7.3/      Source for libgdbm.
+
+   memchan1.3/      Extension giving a memory based TCL channel allowing
+		    the input/output commands to work without creating
+		    files.
+
+   mysqltcl-1.53/   Support for MySQL database.  This is a free database
+		    available for most platforms and supporting a 
+		    significant set of SQL commands.
+
+   src/		    Source for HTML processing extension.  
+
+   tarbals/	    The original distributions for all the components
+		    that came from external sources.
+
+   tcl/		    Some TCL source code.  Primarily wrappers around
+		    the libgdbm support giving fancier databases.
+
+   tcl8.0/	    Patched (slightly) source of tcl8.0p2 that corrects
+		    a bug (or misfeature) that 7script tickles.  7Script
+		    will not run with the distributed tcl8.0p2.
+
+   test/	    Beginnings of a test suite for 7Script
+
+
+Documentation
+=============
+
+There is documentation for 7Script itself within the source distribution.
+Using 7Script is pretty simple, yet very flexible, as this
+example demonstrates
+
+  #!/usr/home/davidh/.local/bin/7script -7script_subst
+  <HTML><!-- -*- html -*- --!>
+  <HEAD>
+  <TITLE>CGI checkup</TITLE>
+  </HEAD>
+  <BODY BGCOLOR=white>
+  <P>
+  <hr>
+  <table border=3 width="100%">
+  <caption><B>CGI Arguments</B></caption>
+  <tr><th width="50%" bgcolor=grey>Argument</th>
+      <th width="50%" bgcolor=grey>Value</th></tr>
+  <{
+      7script foreach arg [cgi args] {
+          <tr><th align=right><$arg></th>
+              <td><{
+                set vl [cgi get $arg]
+                7script if {[llength $vl] > 1} {
+                  <ul><{ 7script foreach val [cgi get $arg] {<li><$val>} }></ul>
+                } else {
+                  <{ lindex $val 0 }>>
+                }
+              }></td></tr>
+      }
+  }>
+  </table>
+  <hr>
+  <table border=3 width="100%">
+  <caption><B>Environment variables</B></caption>
+  <tr><th width="50%" bgcolor=grey>Env Variable</th>
+      <th width="50%" bgcolor=grey>Value</th></tr>
+  <{
+      7script foreach envar [array names env ] {
+          <tr><th align=right><$arg></th>
+              <td><$env($envar)></td></tr>
+      }
+  }>
+  </table>
+  </body>
+
+To make full use of 7Script you will need to understand the TCL programming
+language.  It is also a simple to learn and powerful programming language.
+If you should need help to understand it, there is extensive documentation
+within the TCL source subdirectory.  These books may also be helpful
+
+    Practical Programming in Tcl and Tk, 2nd Edition, by Brent Welch,
+    Prentice-Hall, 1997, ISBN 0-13-616830-2
+
+    Tcl and the Tk Toolkit, by John Ousterhout,
+    Addison-Wesley, 1994, ISBN 0-201-63337-X
+
+    See also: http://www.scriptics.com
+
+Note that the 7Script distribution does not include TK (the GUI toolkit
+for TCL).  This is because 7Script is for producing CGI programs,
+not interactive GUI applications.
+
+Compiling and installing 7Script
+=================================
+
+At this time prebuilt binary distributions of 7Script are not
+available.  7Script should be extremely portable as everything
+involved rides on the excellent portability already built into TCL.
+(TCL is supported on all the versions of Unix, Windows (95/98/NT),
+Macintosh and more.  7Script itself has only been tested on Solaris
+and FreeBSD (the systems I have available) but there is nothing
+unportable about its code, so compiling it for a different platform
+should be little trouble.  Some of the extensions might pose a problem.
+
+If you wish to use the MySQL support built into 7Script you must
+first get, install and configure the MySQL server.  It is a relatively
+simple process and you begin that process at http://www.tcx.se.  Using
+MySQL is optional in 7Script so you might skip this step.
+
+Another good thing to do initially is to choose an installation
+directory for 7Script.  I recommend installing 7Script in a separate
+directory hierarchy from one where you might have installed the normal
+TCL distribution.  7Script requires having its own version of TCL,
+because slight modifications had to be made.  This means it will be
+best to keep 7Script's version of TCL from mixing with the standard
+version of TCL.  In some cases I do not have root access to the
+system and 7Script installs just fine under my home directory.  In
+other cases I do have root access and it installs fine as part of
+the normal place for optional packages (/opt/7script or /usr/local/7script).
+
+At this writing the process is of the "edit the makefile and compile" style
+rather than "run ./configure and compile".  I've seen little need to
+create a "configure" script for the "src" directory since that code
+is incredibly portable already.  The other subdirectories, however, do
+use the "configure" style.
+
+The action starts in the "src" directory:
+
+	% cd src
+
+There are two files to edit: makefile and mk.cfg.  These are both in
+the "GNU make" format and you will need GNU make installed to compile
+7Script (with the existing makefiles).
+
+The tags in "makefile" have the following purposes:
+
+  all: Build "7script".  Previous to this the other
+	directories must be configured.
+
+  install: Build and install "7script".  Previous to this the other
+	directories must be configured.
+
+  libraries:  Build the other directories (TCL and the extensions).
+
+  configure:  Do per-platform configuration in the other directories.
+	The other source directories (besides src/) all use
+	the "./configure" style configuration, and most of them
+	depend on the included TCL being configured and compiled.
+
+	The targets under "configure" do per-platform configuration
+	of these directories in the proper order.
+
+  unconfigure:  Delete all configuration information.  Useful if
+	you want to forget the configuration information.
+
+  install:  Copy the "7script" binary to the installation directory.
+
+  test-tcl:  Run the TCL tests.
+
+  clean:  Remove binaries and other junk files from the source tree.
+
+In "makefile" there are two things to configure.  The intention is to
+have "mk.cfg" have all configuration parameters (in <i>make</i>
+variables suitable for the current platform), and for "makefile" to
+use those variables in the compiling.  However, in the head of
+"makefile" are a couple parameters used to select different sections
+of "mk.cfg".  Make of that what you will.
+
+Ideally the process is simply
+
+1- Pick a platform selection, editing "makefile" to have the platform
+   name in PLATFORM_SELECTOR.  Platform names are listed in "mk.cfg".
+
+2- Compile and install using these commands.
+
+	make configure
+	make
+	make install
+
+Ideally this is the process for all platforms.  However the current state
+of the 7Script source tree often requires more care than that.
+
+If one of the existing platforms is close to what you have you may
+easily copy the section for that platform, change its name to a name
+that reflects your computer system, and change the values of the
+variables in your section.  In <em>mk.cfg</em> descriptions of the
+variables are recorded in the head of the file.  You will end up
+with something like this:
+
+	ifeq ($(PLATFORM_SELECTOR),section.name)
+	...definitions...
+	endif
+
+Then again it is a simple matter of:
+
+	make configure
+	make
+	make install
+
+If your platform is not represented in the set of known platforms then
+a more complicated process is involved.  Almost every step of this
+process is a matter of duplicating code and configuration that is already
+there, and modifying it for your purpose.
+
+1- You first create a section in "mk.cfg" to hold the configuration
+   for your platform.  It helps if you copy one of the existing sections
+   as a starter.
+
+2- Next pick a directory to install into, and put that in BASEDIR.
+
+   Also find the proper directory for MYSQLHOME (if you are using MySQL).
+
+3- For the rest of the variables there is some trial and iteration
+   involved in getting the right values.  For each directory, starting
+   with the TCL distribution, you manually go there and configure
+   the directory and compile it.  As you do note the file name for
+   the library.  Take these shared library file names and put that
+   in your section of the "mk.cfg". 
+
+   If you follow through all of mk.cfg you see that in the per-platform
+   section part of the path for the library is specified.  Then at
+   the end the rest of the pathname is specified in a LIB_xx variable.
+   Then the LIB_xx variable is used in LDFLAGS so that when "7script" is
+   linked all of the required object files are specified.
+
+   Note the options to "configure" needed in each directory.  Ensure
+   that the appropriate "config-xxx" tag will receive the correct
+   arguments on your platform.
+
+   If you are using MySQL support, first enable it in "makefile".
+   Then go to the MySQL TCL support directory and edit the "makefile"
+   there to add a new platform section for your system.  In "mk.cfg"
+   put that platform name in the "MYSQLTCL_PLATFORM_SELECTOR" variable.
+
+4- At the same time you should be able to find appropriate values
+   to put in PLATFORM_CFLAGS and PLATFORM_LDFLAGS.  In particular
+   you will need a proper library specification that loads the
+   encryption software.
+
+5- In configuring the MySQL TCL support directory a platform name
+   is chosen there.  Copy that into your "mk.cfg" section.
+
+This should be all the "mk.cfg" configuring you need.  You can
+now do
+
+	make clean		# Remove all the object files to
+				# force a full clean recompile.
+	make unconfigure	# Removing the prior configuration
+				# to give your "mk.cfg" configuration a 
+				# proper test.
+	make configure		# Regenerate the configuration based on
+				# the information you've gathered above.
+	make			# Recompile the software.
+				# If troubles arise, troubleshoot
+	make install		# Install the result
+
+TROUBLE SHOOTING
+================
+
+TBD
+
+
+ADDING TO 7SCRIPT
+=================
+
+Any TCL extension may be added to 7Script fairly easily.  TCL was
+designed from the beginning to be easily extended with new commands
+and functionality.  In doing this there are two sections of software
+involved.  One section implements the functionality you wish to make
+available to TCL, and the other section implements the interface
+with TCL.  Together those two sections make a "TCL extension".
+
+In this writing I will assume that the code you wish to add is already
+a TCL extension.  If it is not, an interface layer needs to be created
+and the instructions for that is well beyond the scope of this writing.
+
+As you follow these steps, have "makefile" and "mk.cfg" in front of
+you so you may follow from how 7Script is already put together.  The
+steps involved are as follows;
+
+1- Make a directory to hold the source.  The directory is to be at
+   the same level in the file system hierarchy as the "src/", "tcl8.0/"
+   and other directories that go together to make 7Script.
+
+2- In "makefile" add matching entries to the "libraries", "clean",
+   and "configure" tags.  Likewise make "config-xx", "lib-xx"
+   and "clean-xx" tags.  Leave them empty for right now or you
+   can fill them with code mimic'd from the other entries.
+
+3- In the directory for the new extension read through the documentation
+   there to find out the configuration steps and the way to have
+   the "make" process invoked in "src/" to configure this directory.
+
+   For instance, if the source is configured using autoconf (./configure)
+   then it is enough to do as is done with the other packages, simply
+   pass the "--prefix=$(BASEDIR)" argument.  If it is configured in
+   some other way then find out the necessary steps.
+
+   The ideal is that the sources in the extension are unmodified in
+   the process of incorporating them with 7Script.  That instead
+   the build procedure knows what steps to do to configure the sources
+   from the outside.  This makes incorporating later versions of
+   the extension easier to do.
+
+   A valuable example to study for a directory that does not use
+   the autoconf/configure scheme is the MySQL support.  Here there
+   was an already setup system to configure the compilation settings
+   based on a platform name.
+
+   In "mk.cfg" you will need to add variables
+
+	LIB_xx  - This holds the full pathname to the compiled
+		object file that is linked to create 7Script
+
+	Add to LDFLAGS the $(LIB_xx)
+
+	xxDIR   - The relative pathname (from src/) to the
+		sources of this extension
+
+	PLATFORM_xx_NAME - The relative name for the object file.
+
+	Any other required PLATFORM_xx variables that might be needed
+	for special platform specific compilation instructions.  These
+	variables will be referenced at the bottom of "mk.cfg" and 
+	in "makefile" at strategic places. 
+
+4- Run a test configuration and compilation.  If you have completed
+   steps 2 & 3 correctly you have the commands to put into the
+   "config-xx" and "lib-xx" tags of "makefile".  Do so, then type
+
+	make config-xx
+	make lib-xx
+
+   You should be able to determine and troubleshoot problems at this point.
+
+5- Next is incorporating your TCL extension into the TCL portion of
+   7Script.  This is done as usual for TCL, edit the Tcl_AppInit
+   function (located in src/tclAppInit.c) and add the appropriate
+
+	if (xxx_Init(interp) == TCL_ERROR) {
+		return TCL_ERROR;
+	}
+
+   for your extension.
+
+6- Now do a "make 7script".  You should have already configured the CFLAGS
+   and LDFLAGS with information required to link in your extension
+   (primarily LIB_xx setting and adding that to LDFLAGS).
+
+   This will create a "7script" executable in the local directory that
+   you can use at command line to check.  Try executing a few commands
+   from your extension and you can see if it works.  Or if the extension
+   has a test suite you might run that using the "7script" executable.
+
+7- Next we want to check this from a clean build of the source tree.
+   You do this with the following commands
+
+	make clean		# Remove all object files
+	make unconfigure	# Remove all known configuration
+	make 7script		# Build everything from scratch
+				# But do not install (yet)
+
+   Again test your extension as necessary.
+
+8- Now you are ready for the smoke test.  Type "make install" and
+   the whole of everything will be installed.
+
+
+
+   

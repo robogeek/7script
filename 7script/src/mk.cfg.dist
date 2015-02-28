@@ -1,0 +1,467 @@
+# mk.cfg - Configuration parameter file for the compiling 7Script  -*- makefile -*-
+#
+
+###########################
+# VARIABLES SET IN mk.cfg #
+###########################
+#
+#
+# COMPILING DEBUGGING CODE
+# ========================
+#
+# DEBUGFLAG:	Used to set "-g" on compile & link commands.
+#
+# PASSED_DEBUG_FLAG:	Used to pass "CFLAGS=-g" to subsidiary
+#		steps that need "-g" in their CFLAGS.  The CFLAGS
+#		variable is the convention in makefiles to pass 
+#		configuration flags to C compilation steps.
+#
+# GDFT_PASSED_DEBUG_FLAG: The flags used in GDFT to control
+#		the debugging code.
+#
+# MD5_PASSED_DEBUG_FLAG:  The flags used in MD5 to control
+#		the debugging code.
+#
+# PASSWD_PASSED_DEBUG_FLAG: The flags used in TCLPASSWD to
+#		control the debugging code.
+#
+# DIRECTORIES
+# ===========
+#
+# BASEDIR:	The installation directory.  It may be best if the
+#		installation is in a directory specifically set aside
+#		for 7Script.  A bin/, lib/, include/ etc are all
+#		made under this directory, much of which is set up
+#		by and for the included TCL.
+#
+# MYSQLHOME:	This is where to find MySQL include and library files.
+#		It is the same directory as that to which MySQL was
+#		installed.
+#
+# COMPILATION CONFIGURATION
+#
+# PLATFORM_CFLAGS:	CFLAGS to use on this platform
+#		 (only in src/ directory).
+#
+# PLATFORM_LDFLAGS:	LDFLAGS to use on this platform
+#		 (only in src/ directory).
+#
+# PLATFORM_CC:		C Compiler to use on this platform
+#		 (only in src/ directory).
+#
+# CONFIG_ENABLE_GCC_IN_TCL: In ./configure'ing in TCL source directory,
+#		this specifies whether to use "--enable-gcc"
+#
+# CONFIG_ENABLE_SHARED:	In all directories, when ./configure'ing, use
+#		the "--enable-shared" flag (which causes that directory
+#		to generate a shared library.
+#
+# MYSQLTCL_PLATFORM_SELECTOR:	This is the platform name to use
+#		when compiling MySQL.
+#
+# PLATFORM_LIBTCL_NAME:	This is the file name used on this platform
+#		for the TCL shared library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_LIBMEMCHAN_NAME: The file name used on this platform for
+#		the memchan shared library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_LIBGDBM_NAME: The file name used on this platform for
+#		the libgdbm library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_TCLGDBM_NAME: The file name used on this platform for
+#		the gdbm TCL extension library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_TCLMD5_NAME: The file name used on this platform for
+#		the MD5 library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_TCLPASSWD_NAME: The file name used on this platform for
+#		the passwd TCL extension library.  It is used when linking
+#		the <em>7script</em> binary.
+#
+# PLATFORM_TCLGDFT_NAME: The file name used on this platform for
+#		the GD+FreeType TCL extension library.  It is used
+#		when linking the <em>7script</em> binary.
+#
+# PLATFORM_MYSQLTCL: The file name used on this platform for
+#		the MySQL TCL extension library.  It is used
+#		when linking the <em>7script</em> binary.
+# 
+# FIX_TCL_LIB_NAME: On some platforms the TCL library file name
+#		is important and needs to be changed.  I don't know
+#		(remember) which platform that is, perhaps it is
+#		SunOS 4.1 (which I currently do not compile for).
+#
+# BASE_TCL_LIB_NAME:   These file names are used in the renaming
+# FIXED_TCL_LIB_NAMES: process described above.
+#
+# PLATFORM_LIBGDBM_INSTALL: On some platforms libgdbm needs to know
+#		what its installation command is, and cannot figure it
+#		out for itself.
+#
+# GMAKE:	The name under which GNU make is installed on 
+#		your platform.  Often it is installed as 'gmake'.
+#
+#
+##################
+# PLATFORM NAMES #
+##################
+#
+# sun-sparc-solaris-2.6		Generic Solaris (SPARC Solaris 2.6)
+#				Installs in /opt/7script
+#				MySQL in /opt/mysql-xx
+#
+# xxx-x86-solaris-7		Generic Solaris (x86 Solaris 7)
+#				Installs in /opt/7script
+#				MySQL in /opt/mysql-xx
+#
+# xxx-i386-freebsd-2.2.x	Generic FreeBSD (tested on 2.2.5)
+#				Installs in /usr/local/7script
+#				MySQL in /usr/local
+#
+# 7gen.com			FreeBSD 2.1.7 - David Herron's installation
+#				used to drive 7gen.com, reiki.7gen.com,
+#				be-do-have.com and other operations.
+#				Installs in /usr/home/davidh/.local
+#				MySQL in /usr/local
+#
+# gw.home			FreeBSD 2.2.5 - Another of David's home computers
+#				where 7Script is tested and developed.
+#				Installs in /usr/home/davidh/.local
+#				MySQL in /usr/local
+#
+# lappy.home			FreeBSD 2.2.5 - Another of David's home computers
+#				where 7Script is tested and developed.
+#				Installs in /usr/home/davidh/.local
+#				MySQL in /usr/local
+
+##############
+# DEBUG MODE #
+##############
+
+ifeq ($(COMPILE_WITH_DEBUG),yes)
+
+DEBUGFLAG = -g
+PASSED_DEBUG_FLAG = CFLAGS=-g
+GDFT_PASSED_DEBUG_FLAG = DEBUG_CFLAGS="-DNDEBUG -g"
+MD5_PASSED_DEBUG_FLAG  = CC="gcc -g"
+PASSWD_PASSED_DEBUG_FLAG  = CC="gcc -g"
+
+else
+
+DEBUGFLAG = 
+PASSED_DEBUG_FLAG = CFLAGS=
+GDFT_PASSED_DEBUG_FLAG =
+MD5_PASSED_DEBUG_FLAG  =
+PASSWD_PASSED_DEBUG_FLAG  =
+
+endif
+
+
+#######################################
+# Generic Solaris (SPARC Solaris 2.6) #
+#######################################
+
+ifeq ($(PLATFORM_SELECTOR),sun-sparc-solaris-2.6)
+
+BASEDIR                  = /opt/7script
+MYSQLHOME                = /opt/mysql-3.22.4a-beta
+
+PLATFORM_CFLAGS          = -I/usr/local/include $(DEBUGFLAG)
+PLATFORM_LDFLAGS         = -ldl -lsocket -lnsl -lc -lm 
+PLATFORM_CC              = gcc
+CONFIG_ENABLE_GCC_IN_TCL = --enable-gcc
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="SunOS-5.6-sparc"
+
+PLATFORM_LIBTCL_NAME     = libtcl8.0.so
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan1.3.so
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = ../Tclgdbm0.4/tclgdbm.o
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+LIB_TCLGDBM      = $(PLATFORM_TCLGDBM_NAME)
+
+FIX_TCL_LIB_NAME    = no
+BASE_TCL_LIB_NAME   = libtcl80.so.1.0
+FIXED_TCL_LIB_NAMES = libtcl8.0.so.1.0
+
+PLATFORM_LIBGDBM_INSTALL = INSTALL="cp -f"
+GMAKE = make
+
+endif
+
+#######################################
+# Generic Solaris (x86 Solaris 7)     #
+#######################################
+
+ifeq ($(PLATFORM_SELECTOR),xxx-x86-solaris-7)
+
+BASEDIR                  = /opt/7script
+MYSQLHOME                = /opt/mysql-3.22.4a-beta
+
+PLATFORM_CFLAGS          = -I/usr/local/include $(DEBUGFLAG)
+PLATFORM_LDFLAGS         = -ldl -lsocket -lnsl -lc -lm 
+PLATFORM_CC              = gcc
+CONFIG_ENABLE_GCC_IN_TCL = --enable-gcc
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="SunOS-5.7-x86"
+
+PLATFORM_LIBTCL_NAME     = libtcl8.0.so
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan1.3.so
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = ../Tclgdbm0.4/tclgdbm.o
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+LIB_TCLGDBM      = $(PLATFORM_TCLGDBM_NAME)
+
+FIX_TCL_LIB_NAME    = no
+BASE_TCL_LIB_NAME   = libtcl80.so.1.0
+FIXED_TCL_LIB_NAMES = libtcl8.0.so.1.0
+
+PLATFORM_LIBGDBM_INSTALL = INSTALL="cp -f"
+GMAKE = make
+
+endif
+
+
+##############################
+# Generic Redhat Linux (6.0) #
+##############################
+
+ifeq ($(PLATFORM_SELECTOR),xxx-i386-redhat-6.0)
+
+PLATFORM_CC = gcc
+
+BASEDIR                  = /home/david/.7script
+MYSQLHOME                = /usr/mysql
+PLATFORM_CFLAGS          = -I/usr/mysql/include $(DEBUGFLAG) 
+PLATFORM_LDFLAGS         = -lm -lcrypt -ldl
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="Linux-2.0-i586"
+PLATFORM_LIBTCL_NAME     = libtcl8.0.so
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan1.3.so
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = ../Tclgdbm0.4/tclgdbm.o
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+LIB_TCLGDBM      = $(PLATFORM_TCLGDBM_NAME)
+
+GMAKE = gmake
+
+.c.o:
+	gcc -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+endif
+
+
+###########################
+# Generic FreeBSD (2.2.5) #
+###########################
+
+ifeq ($(PLATFORM_SELECTOR),xxx-i386-freebsd-2.2.x)
+
+
+BASEDIR                  = /usr/local/7script
+MYSQLHOME                = /usr/local
+PLATFORM_CFLAGS          = -I/usr/local/include $(DEBUGFLAG) -DFREEBSD
+PLATFORM_LDFLAGS         = -lm -lcrypt
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="FreeBSD-2.2.x"
+PLATFORM_LIBTCL_NAME     = libtcl80.so.1.0
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan13.so.1.0
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = Tclgdbm/Tclgdbm0.4.so
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = ../mysqltcl-1.53/mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+GMAKE = gmake
+
+.c.o:
+	gcc -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+endif
+
+###############################################
+# David's account on pair.com (FreeBSD 2.1.7) #
+###############################################
+
+ifeq ($(PLATFORM_SELECTOR),7gen.com)
+
+
+BASEDIR                  = /usr/home/davidh/.local
+MYSQLHOME                = /usr/local
+PLATFORM_CFLAGS          = -I/usr/local/include $(DEBUGFLAG) -DFREEBSD
+PLATFORM_LDFLAGS         = -lm -lcrypt
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="FreeBSD-pair.com"
+PLATFORM_LIBTCL_NAME     = libtcl80.so.1.0
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan13.so.1.0
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = Tclgdbm/Tclgdbm0.4.so
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = ../mysqltcl-1.53/mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+GMAKE = gmake
+
+.c.o:
+	gcc -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+endif
+
+#########################################
+# David's home computer (FreeBSD 2.2.5) #
+#########################################
+
+ifeq ($(PLATFORM_SELECTOR),gw.home)
+
+BASEDIR     = /usr/home/davidh/.local
+MYSQLHOME       = /usr/local
+PLATFORM_CFLAGS          = -I/usr/local/include $(DEBUGFLAG) -DFREEBSD
+PLATFORM_LDFLAGS         = -lm -lcrypt
+CONFIG_ENABLE_SHARED     = --enable-shared
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="FreeBSD-gw.home"
+PLATFORM_LIBTCL_NAME     = libtcl80.so.1.0
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan13.so.1.0
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = Tclgdbm/Tclgdbm0.4.so
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = ../mysqltcl-1.53/mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+GMAKE = gmake
+
+.c.o:
+	gcc -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+endif
+
+#####################################################
+# Another of David's home computers (FreeBSD 2.2.5) #
+#####################################################
+
+ifeq ($(PLATFORM_SELECTOR),lappy.home)
+
+BASEDIR     = /usr/home/davidh/.local
+MYSQLHOME       = ??
+PLATFORM_CFLAGS          =  -I/usr/local/include $(DEBUGFLAG) -DFREEBSD
+PLATFORM_LDFLAGS         = -lm -lcrypt
+
+MYSQLTCL_PLATFORM_SELECTOR = PLATFORM="FreeBSD-lappy.home"
+PLATFORM_LIBTCL_NAME     = libtcl80.so.1.0
+PLATFORM_LIBMEMCHAN_NAME = Memchan1.3/libmemchan13.so.1.0
+PLATFORM_LIBGDBM_NAME    = libgdbm.a
+PLATFORM_TCLGDBM_NAME    = Tclgdbm/Tclgdbm0.4.so
+PLATFORM_TCLMD5_NAME     = Tclmd5/Tclmd5.so.0.3 
+PLATFORM_TCLPASSWD_NAME  = Tclpasswd/Tclpasswd.so.0.2
+PLATFORM_TCLGDFT_NAME    = Gdtclft/Gdtclft1.9.so
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+PLATFORM_MYSQLTCL        = ../mysqltcl-1.53/mysqltcl.o
+else
+PLATFORM_MYSQLTCL        =
+endif
+
+endif
+
+
+#######################
+# COMPONENT LOCATIONS #
+#######################
+
+TCLDIR     = ../tcl8.0
+GDBMDIR    = ../gdbm-1.7.3
+TCLGDBMDIR = ../Tclgdbm0.4
+MEMCHANDIR = ../memchan1.3
+MD5DIR     = ../Tclmd5-0.3
+PASSWDDIR  = ../Tclpasswd-0.2
+GDFTDIR    = ../Gdtclft1.9.4
+MYSQLTCLDIR = ../mysqltcl-1.53
+
+
+#########################
+# COMPILE CONFIGURATION #
+#########################
+
+
+TCLBASEDIR       = $(BASEDIR)
+
+CFLAGS           = -I${TCLBASEDIR}/include $(PLATFORM_CFLAGS) \
+		   -DSEVENSCRIPT_LIB_DIR=\"$(BASEDIR)/lib/7script\" \
+		   -DSEVENSCRIPT_BASE_DIR=\"$(BASEDIR)\"
+
+
+LIB_TCL          = $(TCLBASEDIR)/lib/$(PLATFORM_LIBTCL_NAME)
+LIB_MEMCHAN      = $(TCLBASEDIR)/lib/$(PLATFORM_LIBMEMCHAN_NAME)
+LIB_GDBM         = $(TCLBASEDIR)/lib/$(PLATFORM_LIBGDBM_NAME)
+ifndef LIB_TCLGDBM
+LIB_TCLGDBM      = $(TCLBASEDIR)/lib/$(PLATFORM_TCLGDBM_NAME)
+endif
+LIB_TCLMD5       = $(TCLBASEDIR)/lib/$(PLATFORM_TCLMD5_NAME) 
+LIB_TCLPASSWD    = $(TCLBASEDIR)/lib/$(PLATFORM_TCLPASSWD_NAME)
+LIB_TCLGDFT      = $(TCLBASEDIR)/lib/$(PLATFORM_TCLGDFT_NAME)
+ifeq ($(PLATFORM_USING_MYSQL),yes)
+LIB_MYSQLTCL     = $(MYSQLTCLDIR)/$(PLATFORM_MYSQLTCL)
+LIB_MYSQLCLIENT  = $(MYSQLHOME)/lib/mysql/libmysqlclient.a
+CFLAGS           += -DUSING_MYSQL=1
+else
+LIB_MYSQLTCL     =
+LIB_MYSQLCLIENT  =
+endif
+
+LDFLAGS = -L${TCLBASEDIR}/lib $(PLATFORM_LDFLAGS) \
+      $(LIB_TCL) $(LIB_MEMCHAN) $(LIB_TCLGDBM) $(LIB_GDBM)  \
+      $(LIB_TCLMD5) $(LIB_TCLPASSWD) $(LIB_TCLGDFT) \
+      $(LIB_MYSQLTCL) $(LIB_MYSQLCLIENT)
+
+CC = $(PLATFORM_CC)
+
+BIN_INSTALL_DIR = $(TCLBASEDIR)/bin
+LIB_INSTALL_DIR = $(TCLBASEDIR)/lib

@@ -1,0 +1,10 @@
+TODO list for 7Script as of August 29, 1999
+
+
+- Verify that the code in tcl/ is useful as packages.  Make package
+  installation work.  Make a $7script_library variable.
+
+- Test installing other SQL modules.
+
+- Upgrade to newer versions of TCL, and the modules we use.
+

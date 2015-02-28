@@ -1,0 +1,17 @@
+# mk.cfg - Configuration settings for 7Portal installation
+
+# This is the base directory where 7Script is installed.
+SEVEN_SCRIPT_BASE_DIR = /home/david/.7script
+
+# This is the root directory for where the web files
+# are stored (eg, the 'DocRoot' configuration in Apache).
+#DOCROOT = /home/david/public_html
+DOCROOT = /usr/apache/htdocs/bdh
+
+DOC_ROOT_ADMIN = $(DOCROOT)/.admin
+
+LIB_INSTALL_DIR = $(SEVEN_SCRIPT_BASE_DIR)/lib
+
+# The directory to install packages specific to this site-implementation
+# of the 7portal/7tree/etc packages.
+SITE_INSTALL_DIR = $(LIB_INSTALL_DIR)

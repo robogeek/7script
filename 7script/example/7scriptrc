@@ -1,0 +1,39 @@
+# 7scriptrc - startup file for 7Script
+#
+# If the file <<<install>>>/lib/7scriptrc exists, then it is sourced
+# while 7Script is starting.  This file, then, is an opportunity to set
+# some site-wide values that are needed for all scripts on a particular
+# host system.
+#
+# This file is not automatically installed.  If you wish to use it,
+# either create your own or copy this one into place and modify it
+# to suit.
+
+
+# One might want to have various modules from the 7script directory
+# automatically loaded.  If so, uncomment the following
+#
+#package require 7oo
+#package require 7sql
+#package require 7util
+
+# If you are using the 7portal package, uncomment the following.
+#
+#package require 7tree
+
+# If you have other directories where packages are installed, then
+# you have a little bit of setup to do.  For example, this is required
+# in properly setting up the 7portal package.
+#
+# One makes a package, which subclasses the 7portal modules, and installs
+# this package in the normal fashion of a TCL package.
+#
+# If the package is not installed in the standard tcl_pkgPath locations
+# then you uncomment the following, and specify the directory
+#
+#lappend tcl_pkgPath directory
+#
+# Next, reference the package using the appropriate "package require" command
+#
+#package require packageName
+
